@@ -1,1 +1,4 @@
-This is a template readme file to enforce main default branch. Edit this file as you see fit.
+
+COMP.CS.300 Tietorakenteet ja algoritmit 1
+
+https://plus2.tuni.fi/COMP.CS.300/fall-2026p1/
