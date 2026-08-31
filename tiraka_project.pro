@@ -14,7 +14,7 @@
 CONFIG += c++20 warn_on
 QT += widgets
 
-TARGET = nysse26
+TARGET = tiraka26
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
