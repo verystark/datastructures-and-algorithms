@@ -245,6 +245,9 @@ private:
     // Explain below your rationale for choosing the data structures you use in
     // this class.
 
+    // vector holds all the stop IDs for easy access
+    std::vector<StopID> ID_;
+
 };
 
 #endif // DATASTRUCTURES_HH
