@@ -38,20 +38,26 @@ Datastructures::~Datastructures()
 
 }
 
+// return number of all stops
 int Datastructures::stop_count()
 {
     return Stops_.size();
 }
 
+// clear all current data structures
 void Datastructures::clear_all()
 {
     return Stops_.clear();
 }
 
+// go through all stops and return vector consisting of stop IDs
 std::vector<StopID> Datastructures::all_stops()
 {
-    // replace with your implementation
-    throw NotImplemented();
+    std::vector<StopID> all_stops;
+    for (auto stop = Stops_.begin(); stop != Stops_.end(); ++stop) {
+        all_stops.push_back(stop->first);
+    }
+    return all_stops;
 }
 
 bool Datastructures::add_stop(StopID /*id*/, const Name& /*name*/, Coord /*xy*/)

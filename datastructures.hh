@@ -16,6 +16,7 @@
 #include <unordered_set>
 #include <map>
 #include <cstddef>
+#include <memory>
 
 // Types for IDs
 using StopID = long int;
@@ -253,7 +254,7 @@ private:
         Name name_;
     };
 
-    // unordered_map holds all the stops
+    // unordered_map holds all the stops for easy access to all stops through StopID without indexing
     std::unordered_map<StopID, Stop_> Stops_;
 
 };
