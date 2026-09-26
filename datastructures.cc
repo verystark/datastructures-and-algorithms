@@ -41,7 +41,7 @@ Datastructures::~Datastructures()
 int Datastructures::stop_count()
 {
     // replace with your implementation
-    return ID_.size();
+    return Stops_.size();
 }
 
 void Datastructures::clear_all()

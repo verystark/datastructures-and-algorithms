@@ -245,8 +245,16 @@ private:
     // Explain below your rationale for choosing the data structures you use in
     // this class.
 
+    // struct containing all stops
+    struct Stop_ {
+        StopID stopID_;
+        RegionID regionID_;
+        RouteID routeID_;
+        Name name_;
+    };
+
     // vector holds all the stop IDs for easy access
-    std::vector<StopID> ID_;
+    std::vector<Stop_> Stops_;
 
 };
 
