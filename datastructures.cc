@@ -60,11 +60,14 @@ std::vector<StopID> Datastructures::all_stops()
     return all_stops;
 }
 
-bool Datastructures::add_stop(StopID /*id*/, const Name& /*name*/, Coord /*xy*/)
+// add stop with given parameters
+bool Datastructures::add_stop(StopID id, const Name& name, Coord xy)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    // add new stop, if stop ID not found in stops
+    auto result = Stops_.try_emplace(id, Stop_{.stopID_ = id, .name_ = name,  .coord_ = xy});
 
+    // return true if new stop added, return false if stop added
+    return result.second;
 }
 
 Name Datastructures::get_stop_name(StopID /*id*/)

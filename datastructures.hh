@@ -249,9 +249,10 @@ private:
     // struct containing all stops
     struct Stop_ {
         StopID stopID_;
-        RegionID regionID_;
-        RouteID routeID_;
+        RegionID regionID_ = NO_REGION;
+        RouteID routeID_ = NO_ROUTE;
         Name name_;
+        Coord coord_;
     };
 
     // unordered_map holds all the stops for easy access to all stops through StopID without indexing
