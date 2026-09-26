@@ -40,14 +40,12 @@ Datastructures::~Datastructures()
 
 int Datastructures::stop_count()
 {
-    // replace with your implementation
     return Stops_.size();
 }
 
 void Datastructures::clear_all()
 {
-    // replace with your implementation
-    throw NotImplemented();
+    return Stops_.clear();
 }
 
 std::vector<StopID> Datastructures::all_stops()

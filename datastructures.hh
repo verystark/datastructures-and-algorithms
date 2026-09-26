@@ -253,8 +253,8 @@ private:
         Name name_;
     };
 
-    // vector holds all the stop IDs for easy access
-    std::vector<Stop_> Stops_;
+    // unordered_map holds all the stops
+    std::unordered_map<StopID, Stop_> Stops_;
 
 };
 
