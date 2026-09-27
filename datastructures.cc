@@ -70,10 +70,16 @@ bool Datastructures::add_stop(StopID id, const Name& name, Coord xy)
     return result.second;
 }
 
-Name Datastructures::get_stop_name(StopID /*id*/)
+// return stop name with given ID
+Name Datastructures::get_stop_name(StopID id)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    auto it = Stops_.find(id);
+
+    // if ID found in stops return stop name, else return NO_NAME
+    if (it != Stops_.end()) {
+        return it->second.name_;
+    }
+    return NO_NAME;
 }
 
 Coord Datastructures::get_stop_coord(StopID /*id*/)
