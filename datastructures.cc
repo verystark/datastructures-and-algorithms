@@ -94,10 +94,28 @@ Coord Datastructures::get_stop_coord(StopID id)
     return NO_COORD;
 }
 
+// add struct into forward list and sort them alphabetically by name
 std::vector<StopID> Datastructures::stops_alphabetically()
 {
-    // replace with your implementation
-    throw NotImplemented();
+    // create empty forward list
+    std::forward_list<Stop_> all_structs;
+
+    // add stop struct into forward list
+    for (const auto& pair : Stops_) {
+        all_structs.push_front(pair.second);
+    }
+
+    // sort by name using lambda function
+    all_structs.sort([](const Stop_& a, const Stop_& b)
+                     {return a.name_ < b.name_;});
+
+    std::vector<StopID> result;
+
+    for (const auto& stop : all_structs) {
+        result.push_back(stop.stopID_);
+    }
+
+    return result;
 }
 
 std::vector<StopID> Datastructures::stops_coord_order()

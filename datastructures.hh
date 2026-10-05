@@ -17,6 +17,7 @@
 #include <map>
 #include <cstddef>
 #include <memory>
+#include <forward_list>
 
 // Types for IDs
 using StopID = long int;
