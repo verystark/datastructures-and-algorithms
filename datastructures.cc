@@ -175,10 +175,17 @@ bool Datastructures::change_stop_name(StopID id, const Name& newname)
     return false;
 }
 
-bool Datastructures::change_stop_coord(StopID /*id*/, Coord /*newcoord*/)
+// search for stop with ID and change coordinates if found
+bool Datastructures::change_stop_coord(StopID id, Coord newcoord)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    auto it = Stops_.find(id);
+
+    // change stop coordinates if ID found and return true, else return false
+    if (it != Stops_.end()) {
+        it->second.coord_ = newcoord;
+        return true;
+    }
+    return false;
 }
 
 bool Datastructures::add_region(RegionID /*id*/, const Name& /*name*/)
