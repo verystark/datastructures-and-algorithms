@@ -210,10 +210,19 @@ Name Datastructures::get_region_name(RegionID id)
     return NO_NAME;
 }
 
+// return vector of all regions
 std::vector<RegionID> Datastructures::all_regions()
 {
-    // replace with your implementation
-    throw NotImplemented();
+    // create vector and pre-allocate memory
+    std::vector<RegionID> all_regions;
+    all_regions.reserve(Regions_.size());
+
+    // add all region IDs to vector
+    for (const auto& [id, region] : Regions_) {
+        all_regions.push_back(id);
+    }
+
+    return all_regions;
 }
 
 bool Datastructures::add_stop_to_region(StopID /*id*/, RegionID /*parentid*/)
