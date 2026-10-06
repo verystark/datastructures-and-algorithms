@@ -108,31 +108,40 @@ std::vector<StopID> Datastructures::stops_alphabetically()
 
     // sort vector with IDs based on alphabetical order of names
     std::sort(result.begin(), result.end(), [this](StopID a, StopID b) {
-        return Stops_[a].name_ < Stops_[b].name_;
+        return Stops_.at(a).name_ < Stops_.at(b).name_;
     });
 
     return result;
 }
 
+// sort vector of stop IDs by distance of stop
 std::vector<StopID> Datastructures::stops_coord_order()
 {
-    // create empty forward list
-    std::forward_list<Stop_> all_structs;
-
-    // add stop struct into forward list
-    for (const auto& pair : Stops_) {
-        all_structs.push_front(pair.second);
-    }
-
-    // sort by name using lambda function
-    all_structs.sort([](const Stop_& a, const Stop_& b)
-                     {return a.coord_ < b.coord_;});
-
+    // make vector and pre-allocate memory for it
     std::vector<StopID> result;
+    result.reserve(Stops_.size());
 
-    for (const auto& stop : all_structs) {
-        result.push_back(stop.stopID_);
+    // add all IDs to vector
+    for (const auto& [id, stop] : Stops_) {
+        result.push_back(id);
     }
+
+    // sort vector based on distance of stop
+    std::sort(result.begin(), result.end(), [this](StopID a, StopID b) {
+        const auto& coordA = Stops_.at(a).coord_;
+        const auto& coordB = Stops_.at(b).coord_;
+
+        auto distA = std::hypot(coordA.x, coordA.y);
+        auto distB = std::hypot(coordB.x, coordB.y);
+
+        // sort by smaller distance
+        if (distA != distB) {
+            return distA < distB;
+        }
+
+        // if distance is equal return sort by smaller y
+        return coordA.y < coordB.y;
+    });
 
     return result;
 }

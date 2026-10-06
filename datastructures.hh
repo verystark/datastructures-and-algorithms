@@ -18,6 +18,7 @@
 #include <cstddef>
 #include <memory>
 #include <forward_list>
+#include <cmath>
 
 // Types for IDs
 using StopID = long int;
