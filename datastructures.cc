@@ -146,10 +146,20 @@ std::vector<StopID> Datastructures::stops_coord_order()
     return result;
 }
 
-std::vector<StopID> Datastructures::find_stops(Name const& /*name*/)
+// return vector of stops with given name, return empty vector if no stops with given name exist
+std::vector<StopID> Datastructures::find_stops(Name const& name)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    // make vector for stops
+    std::vector<StopID> result;
+
+    // go through stops and add to vector if same name
+    for (const auto& [id, stop] : Stops_) {
+        if (stop.name_ == name) {
+            result.push_back(id);
+        }
+    }
+
+    return result;
 }
 
 bool Datastructures::change_stop_name(StopID /*id*/, const Name& /*newname*/)
