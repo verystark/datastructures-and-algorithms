@@ -198,10 +198,16 @@ bool Datastructures::add_region(RegionID id, const Name& name)
     return result.second;
 }
 
-Name Datastructures::get_region_name(RegionID /*id*/)
+// returns region name with given ID
+Name Datastructures::get_region_name(RegionID id)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    auto it = Regions_.find(id);
+
+    // if ID found in Regions_ return region name, else return NO_NAME
+    if (it != Regions_.end()) {
+        return it->second.name_;
+    }
+    return NO_NAME;
 }
 
 std::vector<RegionID> Datastructures::all_regions()
