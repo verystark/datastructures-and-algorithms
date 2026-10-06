@@ -248,7 +248,7 @@ private:
     // Explain below your rationale for choosing the data structures you use in
     // this class.
 
-    // struct containing all stops
+    // struct containing all info about stop
     struct Stop_ {
         StopID stopID_;
         RegionID regionID_ = NO_REGION;
@@ -259,6 +259,15 @@ private:
 
     // unordered_map holds all the stops for easy access to all stops through StopID without indexing
     std::unordered_map<StopID, Stop_> Stops_;
+
+    // struct containing all info about region
+    struct Region_ {
+        RegionID regionID_ = NO_REGION;
+        Name name_;
+    };
+
+    // unordered_map holds all the regions for easy access to all regions through RegionID without indexing
+    std::unordered_map<RegionID, Region_> Regions_;
 
 };
 

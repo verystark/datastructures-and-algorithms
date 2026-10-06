@@ -188,10 +188,14 @@ bool Datastructures::change_stop_coord(StopID id, Coord newcoord)
     return false;
 }
 
-bool Datastructures::add_region(RegionID /*id*/, const Name& /*name*/)
+// add region with given parameters
+bool Datastructures::add_region(RegionID id, const Name& name)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    // add new region if ID not found in regions
+    auto result = Regions_.try_emplace(id, Region_{.regionID_ = id, .name_ = name});
+
+    // return true if new region added, else false
+    return result.second;
 }
 
 Name Datastructures::get_region_name(RegionID /*id*/)
