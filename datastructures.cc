@@ -162,10 +162,17 @@ std::vector<StopID> Datastructures::find_stops(Name const& name)
     return result;
 }
 
-bool Datastructures::change_stop_name(StopID /*id*/, const Name& /*newname*/)
+// search for stop with ID and change name if found
+bool Datastructures::change_stop_name(StopID id, const Name& newname)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    auto it = Stops_.find(id);
+
+    // change stop name if ID found and return true, else return false
+    if (it != Stops_.end()) {
+        it->second.name_ = newname;
+        return true;
+    }
+    return false;
 }
 
 bool Datastructures::change_stop_coord(StopID /*id*/, Coord /*newcoord*/)
