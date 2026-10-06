@@ -94,8 +94,27 @@ Coord Datastructures::get_stop_coord(StopID id)
     return NO_COORD;
 }
 
-// add struct into forward list and sort them alphabetically by name
+// add struct into vector and sort them alphabetically by name
 std::vector<StopID> Datastructures::stops_alphabetically()
+{
+    // make vector and pre-allocate memory for it
+    std::vector<StopID> result;
+    result.reserve(Stops_.size());
+
+    // add all IDs to vector
+    for (const auto& [id, stop] : Stops_) {
+        result.push_back(id);
+    }
+
+    // sort vector with IDs based on alphabetical order of names
+    std::sort(result.begin(), result.end(), [this](StopID a, StopID b) {
+        return Stops_[a].name_ < Stops_[b].name_;
+    });
+
+    return result;
+}
+
+std::vector<StopID> Datastructures::stops_coord_order()
 {
     // create empty forward list
     std::forward_list<Stop_> all_structs;
@@ -107,7 +126,7 @@ std::vector<StopID> Datastructures::stops_alphabetically()
 
     // sort by name using lambda function
     all_structs.sort([](const Stop_& a, const Stop_& b)
-                     {return a.name_ < b.name_;});
+                     {return a.coord_ < b.coord_;});
 
     std::vector<StopID> result;
 
@@ -116,12 +135,6 @@ std::vector<StopID> Datastructures::stops_alphabetically()
     }
 
     return result;
-}
-
-std::vector<StopID> Datastructures::stops_coord_order()
-{
-    // replace with your implementation
-    throw NotImplemented();
 }
 
 std::vector<StopID> Datastructures::find_stops(Name const& /*name*/)
