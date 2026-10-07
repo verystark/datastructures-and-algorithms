@@ -265,6 +265,8 @@ private:
         RegionID regionID_ = NO_REGION;
         Name name_;
         std::vector<StopID> stops_;
+        RegionID parent_ = NO_REGION;
+        std::vector<RegionID> subregions_;
     };
 
     // unordered_map holds all the regions for easy access to all regions through RegionID without indexing

@@ -243,10 +243,22 @@ bool Datastructures::add_stop_to_region(StopID id, RegionID parentid)
     return true;
 }
 
-bool Datastructures::add_subregion_to_region(RegionID /*id*/, RegionID /*parentid*/)
+// add subregion to region
+bool Datastructures::add_subregion_to_region(RegionID id, RegionID parentid)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    auto subregion_it = Regions_.find(id);
+    auto parent_it = Regions_.find(parentid);
+
+    // if regions don't exist or subregion already has a parent return false
+    if (subregion_it == Regions_.end() || parent_it == Regions_.end() || subregion_it->second.parent_ != NO_REGION) {
+        return false;
+    }
+
+    // connect subregion and parent
+    subregion_it->second.parent_ = parentid;
+    parent_it->second.subregions_.push_back(id);
+
+    return true;
 }
 
 std::vector<RegionID> Datastructures::stop_regions(StopID /*id*/)
