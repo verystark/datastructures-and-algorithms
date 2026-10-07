@@ -225,10 +225,22 @@ std::vector<RegionID> Datastructures::all_regions()
     return all_regions;
 }
 
-bool Datastructures::add_stop_to_region(StopID /*id*/, RegionID /*parentid*/)
+// add stop to region
+bool Datastructures::add_stop_to_region(StopID id, RegionID parentid)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    auto stop_it = Stops_.find(id);
+    auto region_it = Regions_.find(parentid);
+
+    // if stop and region don't exist or stop already has region return false
+    if (stop_it == Stops_.end() || region_it == Regions_.end() || stop_it->second.regionID_!= NO_REGION) {
+        return false;
+    }
+
+    // connect stop to region and region to stop
+    stop_it->second.regionID_ = parentid;
+    region_it->second.stops_.push_back(id);
+
+    return true;
 }
 
 bool Datastructures::add_subregion_to_region(RegionID /*id*/, RegionID /*parentid*/)

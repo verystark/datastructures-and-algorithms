@@ -264,6 +264,7 @@ private:
     struct Region_ {
         RegionID regionID_ = NO_REGION;
         Name name_;
+        std::vector<StopID> stops_;
     };
 
     // unordered_map holds all the regions for easy access to all regions through RegionID without indexing
