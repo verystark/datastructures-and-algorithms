@@ -261,10 +261,32 @@ bool Datastructures::add_subregion_to_region(RegionID id, RegionID parentid)
     return true;
 }
 
-std::vector<RegionID> Datastructures::stop_regions(StopID /*id*/)
+// return vector with all regions where stop belongs to
+std::vector<RegionID> Datastructures::stop_regions(StopID id)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    auto stop_it = Stops_.find(id);
+
+    // if ID has no stop return vector with NO_REGION
+    if (stop_it == Stops_.end()) {
+        return { NO_REGION };
+    }
+
+    std::vector<RegionID> result;
+    RegionID current_region = stop_it->second.regionID_;
+
+    // go through regions and add them to vector
+    while (current_region != NO_REGION) {
+        result.push_back(current_region);
+
+        auto region_it = Regions_.find(current_region);
+        if (region_it != Regions_.end()) {
+            current_region = region_it->second.parent_;
+        } else {
+            break;
+        }
+    }
+
+    return result;
 }
 
 std::vector<StopID> Datastructures::stops_closest_to(StopID /*id*/)
