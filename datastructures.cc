@@ -335,10 +335,27 @@ std::vector<StopID> Datastructures::stops_closest_to(StopID id)
     return std::vector<StopID>(all_stops.begin(), all_stops.begin() + count);
 }
 
-bool Datastructures::remove_stop(StopID /*id*/)
+// remove stop with give ID from system
+bool Datastructures::remove_stop(StopID id)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    auto stop_it = Stops_.find(id);
+
+    // if stop doesn't exist return false
+    if (stop_it == Stops_.end()) {
+        return false;
+    }
+
+    RegionID stop_regionid = stop_it->second.regionID_;
+
+    // erase stop from region
+    if (stop_regionid != NO_REGION) {
+        std::erase(Regions_.at(stop_regionid).stops_, id);
+    }
+
+    // erase stop from Stops_
+    Stops_.erase(id);
+
+    return true;
 }
 
 std::pair<Coord,Coord> Datastructures::region_bounding_box(RegionID /*id*/)
