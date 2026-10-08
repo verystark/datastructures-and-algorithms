@@ -289,10 +289,50 @@ std::vector<RegionID> Datastructures::stop_regions(StopID id)
     return result;
 }
 
-std::vector<StopID> Datastructures::stops_closest_to(StopID /*id*/)
+// return vector of closes 5 stops to given stop
+std::vector<StopID> Datastructures::stops_closest_to(StopID id)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    auto stop_it = Stops_.find(id);
+
+    // if given stop doesn't exist return NO_STOP
+    if (stop_it == Stops_.end()) {
+        return { NO_STOP };
+    }
+
+    Coord ref_coord = stop_it->second.coord_;
+
+    // make vector and pre-allocate memory for it
+    std::vector<StopID> all_stops;
+    all_stops.reserve(Stops_.size());
+
+    // add all other stops to vector
+    for (const auto& [other_id, stop] : Stops_) {
+        if (other_id != id) {
+           all_stops.push_back(other_id);
+        }
+    }
+
+    // compute euclidean distance and return closer one
+    auto comp = [this, ref_coord](StopID a, StopID b) {
+        const auto& coordA = Stops_.at(a).coord_;
+        const auto& coordB = Stops_.at(b).coord_;
+
+        auto distA = std::hypot(ref_coord.x - coordA.x, ref_coord.y - coordA.y);
+        auto distB = std::hypot(ref_coord.x - coordB.x, ref_coord.y - coordB.y);
+
+        if (distA != distB) {
+            return distA < distB;
+        }
+
+        return coordA.y < coordB.y;
+    };
+
+    size_t count = std::min<size_t>(5, all_stops.size());
+
+    // sort stops by shortest distance to given stop
+    std::partial_sort(all_stops.begin(), all_stops.begin() + count, all_stops.end(), comp);
+
+    return std::vector<StopID>(all_stops.begin(), all_stops.begin() + count);
 }
 
 bool Datastructures::remove_stop(StopID /*id*/)
