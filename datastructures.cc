@@ -54,6 +54,8 @@ void Datastructures::clear_all()
 std::vector<StopID> Datastructures::all_stops()
 {
     std::vector<StopID> all_stops;
+    all_stops.reserve(Stops_.size());
+
     for (auto stop = Stops_.begin(); stop != Stops_.end(); ++stop) {
         all_stops.push_back(stop->first);
     }
@@ -469,10 +471,19 @@ bool Datastructures::add_route(RouteID id, std::vector<StopID> stops)
     return true;
 }
 
+// return vector consisting of all routes
 std::vector<RouteID> Datastructures::all_routes()
 {
-    // replace with your implementation
-    throw NotImplemented();
+    // make empty vector for routes and pre-allocate memory
+    std::vector<RouteID> all_routes;
+    all_routes.reserve(Routes_.size());
+
+    // add route IDs to vector
+    for (const auto& [routeID, stops] : Routes_) {
+        all_routes.push_back(routeID);
+    }
+
+    return all_routes;
 }
 
 bool Datastructures::remove_route(RouteID /*id*/)
