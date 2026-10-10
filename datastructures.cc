@@ -416,10 +416,31 @@ std::pair<Coord,Coord> Datastructures::region_bounding_box(RegionID id)
     return { Coord{minX, minY}, Coord{maxX, maxY} };
 }
 
-RegionID Datastructures::stops_common_region(StopID /*id1*/, StopID /*id2*/)
+// return RegionID of "first" shared region of given stops
+RegionID Datastructures::stops_common_region(StopID id1, StopID id2)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    // check if stops exist
+    auto stop1_it = Stops_.find(id1);
+    auto stop2_it = Stops_.find(id2);
+    if (stop1_it == Stops_.end() || stop2_it == Stops_.end()) {
+        return NO_REGION;
+    }
+
+    // get vector of all regions connected to id1
+    auto stop1_regions = stop_regions(id1);
+
+    // make unordered_set of all regions connected to id2
+    auto stop2_vector = stop_regions(id2);
+    std::unordered_set<RegionID> stop2_regions(std::make_move_iterator(stop2_vector.begin()),
+                                               std::make_move_iterator(stop2_vector.end()));
+
+    // find first shared region of stops
+    for (const auto& region1 : stop1_regions) {
+        if (stop2_regions.find(region1) != stop2_regions.end()) {
+            return region1;
+        }
+    }
+    return NO_REGION;
 }
 
 
