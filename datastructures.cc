@@ -486,10 +486,10 @@ std::vector<RouteID> Datastructures::all_routes()
     return all_routes;
 }
 
-bool Datastructures::remove_route(RouteID /*id*/)
+// remove route and return true if found, else return false
+bool Datastructures::remove_route(RouteID id)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    return Routes_.erase(id);
 }
 
 std::vector<std::pair<RouteID, StopID>> Datastructures::routes_from(StopID /*stopid*/)
