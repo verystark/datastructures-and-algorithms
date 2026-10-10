@@ -443,11 +443,30 @@ RegionID Datastructures::stops_common_region(StopID id1, StopID id2)
     return NO_REGION;
 }
 
-
-bool Datastructures::add_route(RouteID /*id*/, std::vector<StopID> /*stops*/)
+// add new route to system
+bool Datastructures::add_route(RouteID id, std::vector<StopID> stops)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    // check that route doesn't yet exist
+    if (Routes_.find(id) != Routes_.end()) {
+        return false;
+    }
+
+    // check enough stops given
+    if (stops.size() <= 1) {
+        return false;
+    }
+
+    // check all stops exist
+    for (const auto& stop : stops) {
+        if (Stops_.find(stop) == Stops_.end()) {
+            return false;
+        }
+    }
+
+    // add route to routes container
+    Routes_.emplace(id, std::move(stops));
+
+    return true;
 }
 
 std::vector<RouteID> Datastructures::all_routes()

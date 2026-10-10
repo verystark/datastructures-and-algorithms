@@ -252,7 +252,6 @@ private:
     struct Stop_ {
         StopID stopID_;
         RegionID regionID_ = NO_REGION;
-        RouteID routeID_ = NO_ROUTE;
         Name name_;
         Coord coord_;
     };
@@ -275,6 +274,8 @@ private:
     // helper function to get all coords of stops in region
     void get_region_coords(RegionID id, std::vector<Coord>& coords);
 
+    // unordered_map holds all the routes
+    std::unordered_map<RouteID, std::vector<StopID>> Routes_;
 };
 
 #endif // DATASTRUCTURES_HH
