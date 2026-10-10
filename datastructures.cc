@@ -494,7 +494,23 @@ std::vector<RouteID> Datastructures::all_routes()
 // remove route and return true if found, else return false
 bool Datastructures::remove_route(RouteID id)
 {
-    return Routes_.erase(id);
+    // check if route exists
+    auto route_it = Routes_.find(id);
+    if (route_it == Routes_.end()) {
+        return false;
+    }
+
+    // remove route from stop containers
+    for (const auto& stop : route_it->second) {
+        auto stop_it = Stops_.find(stop);
+        if (stop_it != Stops_.end()) {
+            std::erase(stop_it->second.routes_, id);
+        }
+    }
+
+    // remove route from Routes_ unordered_map
+    Routes_.erase(route_it);
+    return true;
 }
 
 std::vector<std::pair<RouteID, StopID>> Datastructures::routes_from(StopID stopid)
