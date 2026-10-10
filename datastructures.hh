@@ -252,6 +252,7 @@ private:
     struct Stop_ {
         StopID stopID_;
         RegionID regionID_ = NO_REGION;
+        std::vector<RouteID> routes_;
         Name name_;
         Coord coord_;
     };

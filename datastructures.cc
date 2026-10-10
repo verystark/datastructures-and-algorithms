@@ -465,6 +465,11 @@ bool Datastructures::add_route(RouteID id, std::vector<StopID> stops)
         }
     }
 
+    // add route to stop
+    for (const auto& stop : stops) {
+        Stops_[stop].routes_.push_back(id);
+    }
+
     // add route to routes container
     Routes_.emplace(id, std::move(stops));
 
@@ -492,10 +497,9 @@ bool Datastructures::remove_route(RouteID id)
     return Routes_.erase(id);
 }
 
-std::vector<std::pair<RouteID, StopID>> Datastructures::routes_from(StopID /*stopid*/)
+std::vector<std::pair<RouteID, StopID>> Datastructures::routes_from(StopID stopid)
 {
-    // replace with your implementation
-    throw NotImplemented();
+
 }
 
 std::vector<StopID> Datastructures::route_stops(RouteID /*id*/)
