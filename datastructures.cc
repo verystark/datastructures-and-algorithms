@@ -335,7 +335,7 @@ std::vector<StopID> Datastructures::stops_closest_to(StopID id)
     return std::vector<StopID>(all_stops.begin(), all_stops.begin() + count);
 }
 
-// remove stop with give ID from system
+// remove stop with given ID from system
 bool Datastructures::remove_stop(StopID id)
 {
     auto stop_it = Stops_.find(id);
@@ -358,10 +358,62 @@ bool Datastructures::remove_stop(StopID id)
     return true;
 }
 
-std::pair<Coord,Coord> Datastructures::region_bounding_box(RegionID /*id*/)
+// helper function for getting all stops inside region and subregions
+void Datastructures::get_region_coords(RegionID id, std::vector<Coord>& coords)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    auto region_it = Regions_.find(id);
+    if (region_it == Regions_.end()) {
+        return;
+    }
+
+    const auto& region = region_it->second;
+
+    // add all stops in region to coords
+    for (StopID stop_id : region.stops_) {
+        auto stop_it = Stops_.find(stop_id);
+        if (stop_it != Stops_.end()) {
+            coords.push_back(stop_it->second.coord_);
+        }
+    }
+
+    // go to subregions recursively and add their stops
+    for (RegionID subregion_id : region.subregions_) {
+        get_region_coords(subregion_id, coords);
+    }
+}
+
+// return box that fits all stops in region and its subregions
+std::pair<Coord,Coord> Datastructures::region_bounding_box(RegionID id)
+{
+    auto region_it = Regions_.find(id);
+    if (region_it == Regions_.end()) {
+        return { NO_COORD, NO_COORD };
+    }
+
+    std::vector<Coord> coords;
+
+    // call hepler function
+    get_region_coords(id, coords);
+
+    // if no stops in region or its subregions return pair with NO_COORD
+    if (coords.empty()) {
+        return { NO_COORD, NO_COORD };
+    }
+
+    int minX = coords.at(0).x;
+    int minY = coords.at(0).y;
+    int maxX = coords.at(0).x;
+    int maxY = coords.at(0).y;
+
+    // find min and max X, Y coordinates
+    for (const auto& coord : coords) {
+        if (coord.x < minX) minX = coord.x;
+        if (coord.y < minY) minY = coord.y;
+        if (coord.x > maxX) maxX = coord.x;
+        if (coord.y > maxY) maxY = coord.y;
+    }
+
+    return { Coord{minX, minY}, Coord{maxX, maxY} };
 }
 
 RegionID Datastructures::stops_common_region(StopID /*id1*/, StopID /*id2*/)

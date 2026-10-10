@@ -272,6 +272,9 @@ private:
     // unordered_map holds all the regions for easy access to all regions through RegionID without indexing
     std::unordered_map<RegionID, Region_> Regions_;
 
+    // helper function to get all coords of stops in region
+    void get_region_coords(RegionID id, std::vector<Coord>& coords);
+
 };
 
 #endif // DATASTRUCTURES_HH
