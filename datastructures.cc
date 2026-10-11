@@ -572,8 +572,10 @@ void Datastructures::clear_routes()
     Routes_.clear();
 }
 
+// return journey between given stops
 std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_any(StopID fromstop, StopID tostop)
 {
+    // check if stops exist
     auto fromstop_it = Stops_.find(fromstop);
     auto tostop_it = Stops_.find(tostop);
     if (fromstop_it == Stops_.end() || tostop_it == Stops_.end()) {
@@ -584,9 +586,9 @@ std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_any(S
         return {{fromstop, NO_ROUTE, 0}};
     }
 
+    // create containers for BFS
     std::queue<StopID> queue;
     std::unordered_set<StopID> visited;
-
     std::unordered_map<StopID, std::pair<StopID, RouteID>> came_from;
 
     queue.push(fromstop);
@@ -594,6 +596,7 @@ std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_any(S
 
     bool found = false;
 
+    // BFS algorithm for finding journey
     while (!queue.empty()) {
         StopID current = queue.front();
         queue.pop();
@@ -603,6 +606,7 @@ std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_any(S
             break;
         }
 
+        // add branches
         auto next_connections = routes_from(current);
         for (const auto& [route_id, next_stop] : next_connections) {
             if (next_stop != NO_STOP && visited.find(next_stop) == visited.end()) {
@@ -620,6 +624,7 @@ std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_any(S
     std::vector<std::pair<StopID, RouteID>> path_reversed;
     StopID curr = tostop;
 
+    // create path by going backwards the journey
     while (curr != fromstop) {
         auto [prev_stop, route_id] = came_from[curr];
         path_reversed.push_back({curr, route_id});
@@ -627,6 +632,7 @@ std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_any(S
     }
     path_reversed.push_back({fromstop, NO_ROUTE});
 
+    // reverse path to correct order
     std::reverse(path_reversed.begin(), path_reversed.end());
 
     std::vector<std::tuple<StopID, RouteID, Distance>> result;
@@ -637,6 +643,7 @@ std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_any(S
     StopID prev_id = path_reversed.front().first;
     result.push_back({prev_id, NO_ROUTE, 0});
 
+    // calculate distances of stops on path and add to result
     for (size_t i = 1; i < path_reversed.size(); ++i) {
         StopID curr_id = path_reversed.at(i).first;
         RouteID route_used = path_reversed.at(i).second;
@@ -655,10 +662,94 @@ std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_any(S
     return result;
 }
 
-std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_least_stops(StopID /*fromstop*/, StopID /*tostop*/)
+// return journey with least stops
+std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_least_stops(StopID fromstop, StopID tostop)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    // check if stops exist
+    auto fromstop_it = Stops_.find(fromstop);
+    auto tostop_it = Stops_.find(tostop);
+    if (fromstop_it == Stops_.end() || tostop_it == Stops_.end()) {
+        return {{NO_STOP, NO_ROUTE, NO_DISTANCE}};
+    }
+
+    if (fromstop == tostop) {
+        return {{fromstop, NO_ROUTE, 0}};
+    }
+
+    // create containers for BFS
+    std::queue<StopID> queue;
+    std::unordered_set<StopID> visited;
+    std::unordered_map<StopID, std::pair<StopID, RouteID>> came_from;
+
+    queue.push(fromstop);
+    visited.insert(fromstop);
+
+    bool found = false;
+
+    // BFS algorithm for finding journey
+    while (!queue.empty()) {
+        StopID current = queue.front();
+        queue.pop();
+
+        if (current == tostop) {
+            found = true;
+            break;
+        }
+
+        // add branches
+        auto next_connections = routes_from(current);
+        for (const auto& [route_id, next_stop] : next_connections) {
+            if (next_stop != NO_STOP && visited.find(next_stop) == visited.end()) {
+                visited.insert(next_stop);
+                came_from[next_stop] = {current, route_id};
+                queue.push(next_stop);
+            }
+        }
+    }
+
+    if (!found) {
+        return {};
+    }
+
+    std::vector<std::pair<StopID, RouteID>> path_reversed;
+    StopID curr = tostop;
+
+    // create path
+    while (curr != fromstop) {
+        auto [prev_stop, route_id] = came_from[curr];
+        path_reversed.push_back({curr, route_id});
+        curr = prev_stop;
+    }
+
+    path_reversed.push_back({fromstop, NO_ROUTE});
+
+    // reverse path to right order
+    std::reverse(path_reversed.begin(), path_reversed.end());
+
+    std::vector<std::tuple<StopID, RouteID, Distance>> result;
+    result.reserve(path_reversed.size());
+
+    Distance total_distance = 0;
+
+    // calculate distance and add to result in correct form
+    for (size_t i = 0; i < path_reversed.size(); ++i) {
+        StopID curr_id = path_reversed.at(i).first;
+
+        if (i > 0) {
+            StopID prev_id = path_reversed.at(i - 1).first;
+
+            Coord coord1 = Stops_.find(prev_id)->second.coord_;
+            Coord coord2 = Stops_.find(curr_id)->second.coord_;
+
+            total_distance += static_cast<Distance>(std::hypot(coord1.x - coord2.x, coord1.y - coord2.y));
+        }
+
+        RouteID route_to_next = (i + 1 < path_reversed.size()) ? path_reversed.at(i + 1).second : NO_ROUTE;
+
+        result.push_back({curr_id, route_to_next, total_distance});
+    }
+
+    return result;
 }
 
 std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_with_cycle(StopID /*fromstop*/)
