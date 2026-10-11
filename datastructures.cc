@@ -832,10 +832,102 @@ std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_with_
     return result;
 }
 
-std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_shortest_distance(StopID /*fromstop*/, StopID /*tostop*/)
+// return journey with shortest euclidian distance
+std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_shortest_distance(StopID fromstop, StopID tostop)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    // check that stops exist
+    auto fromstop_it = Stops_.find(fromstop);
+    auto tostop_it = Stops_.find(tostop);
+    if (fromstop_it == Stops_.end() || tostop_it == Stops_.end()) {
+        return {{NO_STOP, NO_ROUTE, NO_DISTANCE}};
+    }
+
+    if (fromstop == tostop) {
+        return {{fromstop, NO_ROUTE, 0}};
+    }
+
+    // create priority queue for Djikstra
+    using QueueElem = std::pair<Distance, StopID>;
+    std::priority_queue<QueueElem, std::vector<QueueElem>, std::greater<QueueElem>> priorityq;
+
+    std::unordered_map<StopID, Distance> distances;
+    std::unordered_map<StopID, std::pair<StopID, RouteID>> came_from;
+
+    distances[fromstop] = 0;
+    priorityq.push({0, fromstop});
+
+    bool found = false;
+
+    // Djikstra algorithm
+    while (!priorityq.empty()) {
+        auto [curr_dist, current] = priorityq.top();
+        priorityq.pop();
+
+        // shortest path found, if got to stop
+        if (current == tostop) {
+            found = true;
+            break;
+        }
+
+        // skip if new distance is longer than current distance
+        if (curr_dist > distances[current]) {
+            continue;
+        }
+
+        Coord coord1 = Stops_.at(current).coord_;
+        auto connections = routes_from(current);
+
+        // go through neigbours
+        for (const auto& [route_id, next_stop] : connections) {
+            if (next_stop == NO_STOP) {
+                continue;
+            }
+
+            Coord coord2 = Stops_.at(next_stop).coord_;
+            Distance edge_dist = static_cast<Distance>(std::hypot(coord2.x - coord1.x, coord2.y - coord1.y));
+            Distance new_dist = curr_dist + edge_dist;
+
+            // replace current path if new path is shorter
+            if (distances.find(next_stop) == distances.end() || new_dist < distances[next_stop]) {
+                distances[next_stop] = new_dist;
+                came_from[next_stop] = {current, route_id};
+                priorityq.push({new_dist, next_stop});
+            }
+        }
+    }
+
+    if (!found) {
+        return {};
+    }
+
+    std::vector<std::pair<StopID, RouteID>> path_reversed;
+    StopID curr = tostop;
+
+    // create reversed path
+    while (curr != fromstop) {
+        auto [prev_stop, route_id] = came_from[curr];
+        path_reversed.push_back({curr, route_id});
+        curr = prev_stop;
+    }
+    path_reversed.push_back({fromstop, NO_ROUTE});
+
+    std::reverse(path_reversed.begin(), path_reversed.end());
+
+    // make final vector with shortest distances
+    std::vector<std::tuple<StopID, RouteID, Distance>> result;
+    result.reserve(path_reversed.size());
+
+    for (size_t i = 0; i < path_reversed.size(); ++i) {
+        StopID curr_id = path_reversed.at(i).first;
+        Distance total_dist = distances[curr_id];
+
+        RouteID route_to_next = (i + 1 < path_reversed.size()) ? path_reversed.at(i + 1).second : NO_ROUTE;
+
+        result.push_back({curr_id, route_to_next, total_dist});
+    }
+
+    return result;
+
 }
 
 
