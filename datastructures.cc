@@ -513,9 +513,39 @@ bool Datastructures::remove_route(RouteID id)
     return true;
 }
 
+// return vector of next stops from given stop
 std::vector<std::pair<RouteID, StopID>> Datastructures::routes_from(StopID stopid)
 {
+    // check if given stop exists
+    auto stop_it = Stops_.find(stopid);
+    if (stop_it == Stops_.end()) {
+        return {{NO_ROUTE, NO_STOP}};
+    }
 
+    std::vector<std::pair<RouteID, StopID>> routes_from;
+
+    // go through all routes from stop and add next stop to vector
+    const auto& stop_routes = stop_it->second.routes_;
+    for (const auto& routeID : stop_routes) {
+        auto route_it = Routes_.find(routeID);
+
+        // if route has no stops do nothing
+        if (route_it == Routes_.end()) {
+            continue;
+        }
+
+        const auto& route_stops = route_it->second;
+
+        auto it = std::find(route_stops.begin(), route_stops.end(), stopid);
+
+        // add route and next stop to vector
+        if (it != route_stops.end() && (it + 1) != route_stops.end()) {
+            StopID next_stop = *(it + 1);
+            routes_from.push_back({routeID, next_stop});
+        }
+    }
+
+    return routes_from;
 }
 
 std::vector<StopID> Datastructures::route_stops(RouteID /*id*/)
