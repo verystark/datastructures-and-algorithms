@@ -560,10 +560,15 @@ std::vector<StopID> Datastructures::route_stops(RouteID id)
     return route_it->second;
 }
 
+// delete all routes from system
 void Datastructures::clear_routes()
 {
-    // replace with your implementation
-    throw NotImplemented();
+    // clear routes from stops
+    for (auto& [id, stop] : Stops_) {
+        stop.routes_.clear();
+    }
+
+    Routes_.clear();
 }
 
 std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_any(StopID /*fromstop*/, StopID /*tostop*/)
