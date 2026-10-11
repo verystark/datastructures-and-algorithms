@@ -752,10 +752,84 @@ std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_least
     return result;
 }
 
-std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_with_cycle(StopID /*fromstop*/)
+// DFS algorithm helper function
+bool Datastructures::dfs_algo(StopID curr, std::vector<std::pair<StopID, RouteID>>& current_path, std::unordered_set<StopID>& visited, std::unordered_set<StopID>& in_stack)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    visited.insert(curr);
+    in_stack.insert(curr);
+
+    // look for cycle
+    auto connections = routes_from(curr);
+    for (const auto& [route_id, next_stop] : connections) {
+        if (next_stop == NO_STOP) continue;
+
+        // add route to path
+        current_path.push_back({next_stop, route_id});
+
+        // check if next stop already on path
+        if (in_stack.find(next_stop) != in_stack.end()) {
+            return true;
+        }
+
+        // if next stop not yet checked call dfs_algo recursively
+        if (visited.find(next_stop) == visited.end()) {
+            if (dfs_algo(next_stop, current_path, visited, in_stack)) {
+                return true;
+            }
+        }
+
+        current_path.pop_back();
+    }
+
+    in_stack.erase(curr);
+    return false;
+}
+
+// return journey with cycle
+std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_with_cycle(StopID fromstop)
+{
+
+    // check that stops exists
+    if (Stops_.find(fromstop) == Stops_.end()) {
+        return {{NO_STOP, NO_ROUTE, NO_DISTANCE}};
+    }
+
+    std::vector<std::pair<StopID, RouteID>> current_path;
+    std::unordered_set<StopID> visited;
+    std::unordered_set<StopID> in_stack;
+
+    current_path.push_back({fromstop, NO_ROUTE});
+
+    // do DFS search
+    bool cycle_found = dfs_algo(fromstop, current_path, visited, in_stack);
+
+    // if no path with cycle found return empty vector
+    if (!cycle_found) {
+        return {};
+    }
+
+    std::vector<std::tuple<StopID, RouteID, Distance>> result;
+    result.reserve(current_path.size());
+
+    Distance total_distance = 0;
+
+    // add path to result vector
+    for (size_t i = 0; i < current_path.size(); ++i) {
+        StopID curr_id = current_path.at(i).first;
+
+        if (i > 0) {
+            StopID prev_id = current_path.at(i - 1).first;
+            Coord coord1 = Stops_.find(prev_id)->second.coord_;
+            Coord coord2 = Stops_.find(curr_id)->second.coord_;
+            total_distance += static_cast<Distance>(std::hypot(coord1.x - coord2.x, coord1.y - coord2.y));
+        }
+
+        RouteID route_to_next = (i + 1 < current_path.size()) ? current_path.at(i + 1).second : NO_ROUTE;
+
+        result.push_back({curr_id, route_to_next, total_distance});
+    }
+
+    return result;
 }
 
 std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_shortest_distance(StopID /*fromstop*/, StopID /*tostop*/)

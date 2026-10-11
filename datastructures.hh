@@ -276,6 +276,9 @@ private:
     // helper function to get all coords of stops in region
     void get_region_coords(RegionID id, std::vector<Coord>& coords);
 
+    // helper function for DFS algorithm
+    bool dfs_algo(StopID curr, std::vector<std::pair<StopID, RouteID>>& current_path, std::unordered_set<StopID>& visited, std::unordered_set<StopID>& in_stack);
+
     // unordered_map holds all the routes
     std::unordered_map<RouteID, std::vector<StopID>> Routes_;
 };
