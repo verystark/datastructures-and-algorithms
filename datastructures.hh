@@ -20,6 +20,7 @@
 #include <forward_list>
 #include <cmath>
 #include <queue>
+#include <algorithm>
 
 // Types for IDs
 using StopID = long int;
