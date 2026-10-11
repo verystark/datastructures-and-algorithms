@@ -548,10 +548,16 @@ std::vector<std::pair<RouteID, StopID>> Datastructures::routes_from(StopID stopi
     return routes_from;
 }
 
-std::vector<StopID> Datastructures::route_stops(RouteID /*id*/)
+// return route stops in order
+std::vector<StopID> Datastructures::route_stops(RouteID id)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    // check that route exists
+    auto route_it = Routes_.find(id);
+    if (route_it == Routes_.end()) {
+        return {NO_STOP};
+    }
+
+    return route_it->second;
 }
 
 void Datastructures::clear_routes()
