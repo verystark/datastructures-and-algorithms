@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include <cassert>
+#include <queue>
 #include <utility>
 
 #include "datastructures.hh"
@@ -571,11 +572,87 @@ void Datastructures::clear_routes()
     Routes_.clear();
 }
 
-std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_any(StopID /*fromstop*/, StopID /*tostop*/)
+std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_any(StopID fromstop, StopID tostop)
 {
-    // replace with your implementation
-    throw NotImplemented();
+    auto fromstop_it = Stops_.find(fromstop);
+    auto tostop_it = Stops_.find(tostop);
+    if (fromstop_it == Stops_.end() || tostop_it == Stops_.end()) {
+        return {{NO_STOP, NO_ROUTE, NO_DISTANCE}};
+    }
 
+    if (fromstop == tostop) {
+        return {{fromstop, NO_ROUTE, 0}};
+    }
+
+    std::queue<StopID> queue;
+    std::unordered_set<StopID> visited;
+
+    std::unordered_map<StopID, std::pair<StopID, RouteID>> came_from;
+
+    queue.push(fromstop);
+    visited.insert(fromstop);
+
+    bool found = false;
+
+    while (!queue.empty()) {
+        StopID current = queue.front();
+        queue.pop();
+
+        if (current == tostop) {
+            found = true;
+            break;
+        }
+
+        auto next_connections = routes_from(current);
+        for (const auto& [route_id, next_stop] : next_connections) {
+            if (next_stop != NO_STOP && visited.find(next_stop) == visited.end()) {
+                visited.insert(next_stop);
+                came_from[next_stop] = {current, route_id};
+                queue.push(next_stop);
+            }
+        }
+    }
+
+    if (!found) {
+        return {};
+    }
+
+    std::vector<std::pair<StopID, RouteID>> path_reversed;
+    StopID curr = tostop;
+
+    while (curr != fromstop) {
+        auto [prev_stop, route_id] = came_from[curr];
+        path_reversed.push_back({curr, route_id});
+        curr = prev_stop;
+    }
+    path_reversed.push_back({fromstop, NO_ROUTE});
+
+    std::reverse(path_reversed.begin(), path_reversed.end());
+
+    std::vector<std::tuple<StopID, RouteID, Distance>> result;
+    result.reserve(path_reversed.size());
+
+    Distance total_distance = 0;
+
+    StopID prev_id = path_reversed.front().first;
+    result.push_back({prev_id, NO_ROUTE, 0});
+
+    for (size_t i = 1; i < path_reversed.size(); ++i) {
+        StopID curr_id = path_reversed.at(i).first;
+        RouteID route_used = path_reversed.at(i).second;
+
+        Coord coord1 = Stops_.find(prev_id)->second.coord_;
+        Coord coord2 = Stops_.find(curr_id)->second.coord_;
+
+        auto dist = static_cast<Distance>(std::hypot(coord1.x - coord2.x, coord1.y - coord2.y));
+
+        total_distance += dist;
+        result.push_back({curr_id, route_used, total_distance});
+
+        prev_id = curr_id;
+    }
+
+    return result;
 }
 
 std::vector<std::tuple<StopID, RouteID, Distance>> Datastructures::journey_least_stops(StopID /*fromstop*/, StopID /*tostop*/)
